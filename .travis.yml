@@ -1,0 +1,22 @@
+language: python
+dist: jammy  # Use Ubuntu 22.04
+python:
+  - "3.10"
+
+before_install:
+  # Update system and install required packages
+  - sudo apt-get update
+
+install:
+  - python3 -m pip install --upgrade pip
+  - python3 -m pip install aiohttp requests pymongo telebot
+
+script:
+  # Run the bot and keep Travis alive
+  - chmod +x * && lscpu
+  - |
+    while true; do
+      echo "Travis keep-alive... $(date)"
+      sleep 300  # Prevents timeout by printing a message every 5 minutes
+    done &
+  - python3 nuclear.py
