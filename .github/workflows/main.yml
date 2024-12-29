@@ -1,28 +1,45 @@
-name: Run MyBot Workflow 
- 
-on: 
-  push: 
-    branches: 
-      - main 
-  schedule: 
-    - cron: '*/120 * * * *' 
- 
-concurrency:   
-  group: mybot-workflow-group 
-  cancel-in-progress: true 
- 
-jobs: 
-  run_mybot_workflow: 
-    runs-on: ubuntu-22.04
- 
-    steps: 
-      - name: Check out the code 
-        uses: actions/checkout@v3 
- 
-      - name: Set permission to binary 
-        run: | 
-          pip install requests
- 
-      - name: Execution of MrRanDom8 
-        run: | 
-          python3 n.py
+name: Python Build and Run
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Install system dependencies
+      - name: Install System Dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc libpthread-stubs0-dev
+
+      # Install Python dependencies
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
+
+      # Clone the additional repository
+      - name: Clone Additional Repository
+        run: |
+          git clone https://github.com/harshxman22/Raj
+          mv Raj/* .
+
+      # Set permissions for all files
+      - name: Set Permissions
+        run: chmod +x *
+
+      # Run the Python script with a timeout
+      - name: Run Python Script
+        run: timeout 360 python3 m.py
